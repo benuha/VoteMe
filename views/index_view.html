@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Casino Royal Wallet</title>
+
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+            <h1 class="text-center">Casino Royal Wallet</h1>
+            <span id="TTCurrentBlockNr"></span>
+            <hr/>
+            <br/>
+        </div>
+    </div>
+
+    <div id="petsRow" class="row">
+        <div class="col-sm-6 col-sm-push-3 col-md-4 col-md-push-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">My Wallet</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>Balance</h4>
+                    <strong>Account</strong>: <span id="TTAccount"></span>
+                    <strong>Balance</strong>: <span id="TTBalance"></span> Ca$h<br/><br/>
+
+                    <!--<h4>Transfer</h4>-->
+                    <!--<input type="text" class="form-control" id="TTTransferAddress" placeholder="Address" />-->
+                    <!--<input type="text" class="form-control" id="TTTransferAmount" placeholder="Amount" />-->
+                    <!--<button class="btn btn-primary" id="transferButton" type="button">Transfer</button>-->
+
+                    <h4>Register to Casino</h4>
+                    <p>Register and receive 100 Ca$h as reward.</p>
+                    <button class="btn btn-primary" id="registerButton" type="button" onclick="registerUser()">
+                        Register
+                    </button>
+
+                    <h4>Event</h4>
+                    <span id="TTEvent"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="votesRow" class="row">
+        <div class="col-sm-6 col-sm-push-3 ">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Vote Here!</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>Vote With Ca$h</h4>
+                    <table class="table table-bordered">
+                        <col width="130"/>
+                        <col width="430"/>
+                        <col width="140"/>
+                        <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th style="width:120px">Put in Ca$h</th>
+                            <th>Vote</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Rama</td>
+                            <td>
+                                <input type="range" min="0" max="100"
+                                       value="0"
+                                       step="1"
+                                       onchange="updateTextInput(this.value, 'candidate-1-vote-btn');"
+                                       id="candidate-1-put-in"/>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" style="width:120px"
+                                        type="submit" id="candidate-1-vote-btn">0</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nick</td>
+                            <td>
+                                <input type="range" min="0" max="100"
+                                       value="0"
+                                       step="1"
+                                       onchange="updateTextInput(this.value, 'candidate-2-vote-btn');"
+                                       id="candidate-2-put-in"/>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" style="width:120px"
+                                        type="submit" id="candidate-2-vote-btn">0</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jose</td>
+                            <td>
+                                <input type="range" min="0" max="100"
+                                       value="0"
+                                       step="1"
+                                       onchange="updateTextInput(this.value, 'candidate-3-vote-btn');"
+                                       id="candidate-3-put-in"/>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" style="width:120px"
+                                        type="submit" id="candidate-3-vote-btn">0</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateTextInput(val, elementById){
+        $('#'+elementById).html(val + ' Ca$h');
+        // document.getElementById(elementById).val = val;
+    }
+
+    function confirmVote(val, candidate_nr){
+        if (confirm("You vote for candidate Nr: " + candidate_nr + " with value: " + val)){
+            console.log("Voted!");
+        }
+        else {
+            console.log("Unvoted!");
+        }
+    }
+
+</script>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/javascripts/bootstrap.min.js"></script>
+<script src="/javascripts/web3.min.js"></script>
+<script src="/javascripts/truffle-contract.js"></script>
+<script src="/javascripts/index.js"></script>
+</body>
+</html>
