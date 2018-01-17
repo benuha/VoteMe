@@ -36,7 +36,8 @@
                 </div>
                 <div class="panel-body">
                     <h4>Balance</h4>
-                    <strong>Account</strong>: <span id="TTAccount"></span>
+                    <strong>Account</strong>: <span id="TTAccount"></span><br/>
+                    <strong>ETH</strong>: <span id="TTEthe"></span> Eth<br/>
                     <strong>Balance</strong>: <span id="TTBalance"></span> Ca$h<br/><br/>
 
                     <!--<h4>Transfer</h4>-->
@@ -48,6 +49,14 @@
                     <p>Register and receive 100 Ca$h as reward.</p>
                     <button class="btn btn-primary" id="registerButton" type="button" onclick="registerUser()">
                         Register
+                    </button>
+
+                    <button class="btn btn-primary" id="initPoll" type="button" onclick="createPoll()">
+                        Init Poll
+                    </button>
+
+                    <button class="btn btn-primary" id="evalPoll" type="button" onclick="evalPoll()">
+                        Evaluate Poll
                     </button>
 
                     <h4>Event</h4>
@@ -67,18 +76,21 @@
                     <h4>Vote With Ca$h</h4>
                     <table class="table table-bordered">
                         <col width="130"/>
+                        <col width="130"/>
                         <col width="430"/>
                         <col width="140"/>
                         <thead>
                         <tr>
                             <th>Candidate</th>
+                            <th>Amounts</th>
                             <th style="width:120px">Put in Ca$h</th>
                             <th>Vote</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>Rama</td>
+                            <td>1</td>
+                            <td><span id="candidate_1_amount">0</span></td>
                             <td>
                                 <input type="range" min="0" max="100"
                                        value="0"
@@ -88,11 +100,13 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary" style="width:120px"
-                                        type="submit" id="candidate-1-vote-btn">0</button>
+                                        type="submit" id="candidate-1-vote-btn"
+                                        onclick="vote(0, document.getElementById('candidate-1-put-in').value)">0</button>
                             </td>
                         </tr>
                         <tr>
-                            <td>Nick</td>
+                            <td>2</td>
+                            <td><span id="candidate_2_amount">0</span></td>
                             <td>
                                 <input type="range" min="0" max="100"
                                        value="0"
@@ -102,11 +116,13 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary" style="width:120px"
-                                        type="submit" id="candidate-2-vote-btn">0</button>
+                                        type="submit" id="candidate-2-vote-btn"
+                                        onclick="vote(1, document.getElementById('candidate-2-put-in').value)">0</button>
                             </td>
                         </tr>
                         <tr>
-                            <td>Jose</td>
+                            <td>3</td>
+                            <td><span id="candidate_3_amount">0</span></td>
                             <td>
                                 <input type="range" min="0" max="100"
                                        value="0"
@@ -116,7 +132,8 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary" style="width:120px"
-                                        type="submit" id="candidate-3-vote-btn">0</button>
+                                        type="submit" id="candidate-3-vote-btn"
+                                        onclick="vote(2, document.getElementById('candidate-3-put-in').value)">0</button>
                             </td>
                         </tr>
                         </tbody>

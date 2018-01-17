@@ -20,7 +20,6 @@ contract('CasinoToken', function(accounts) {
     });
 
     it("should send coin correctly", function () {
-        // todo
         var token;
         var events;
 
@@ -73,6 +72,4 @@ contract('CasinoToken', function(accounts) {
             return instance.eventCallback();
         });
     });
-
-
 });

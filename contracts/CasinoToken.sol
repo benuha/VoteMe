@@ -16,36 +16,86 @@ contract CasinoToken is BasicToken, Ownable {
     uint public INITIAL_SUPPLY = 1000000;
     uint public PRE_SUPPLY = 100;
 
-    struct Poll {
-        string title;
-        mapping (address => mapping(uint => uint)) voterToCandidates;
-        uint[] amountsPerCandidates;
-        uint _expiredTime;
+    /* Test event callback*/
+    event CallbackEvent(address user, uint256 value, string s);
+
+    event VoteCallback(address user, uint256 _amount, uint256 _candidateId);
+
+    // Poll options
+    uint public indexOfWinner;
+    uint[] public amountsPerCandidates;
+    uint public expiredTime;
+
+    mapping (address => uint) voterToTicketIdx;
+    Ticket[] public tickets;
+
+    struct Ticket {
+        address voter;
+        uint candidateIds;
+        uint amount;
     }
 
-    Poll currentPoll;
-    uint indexOfWinner = 0;
-
-    function createPoll(string _title, uint _nrOfCandidates, uint _expiredMin) public {
-        currentPoll = Poll(_title, new uint[](_nrOfCandidates), now + 10 minutes);
+    function createPoll(uint _nrOfCandidates, uint _expiredInSecond) public {
+        require(balances[msg.sender] >= 501);
+        balances[msg.sender] -= 500;
+        amountsPerCandidates = new uint[](_nrOfCandidates);
+        expiredTime = now + _expiredInSecond;
     }
 
     function voteOnCandidate(uint _candidateId, uint _amount) public {        
-        require(currentPoll._expiredTime >= now);
-        require(currentPoll.voterToCandidates[msg.sender][_candidateId] == 0);
-        currentPoll.amountsPerCandidates[_candidateId] += _amount;
-        currentPoll.voterToCandidates[msg.sender][_candidateId] = _amount;
+//        require(expiredTime >= now);
+        require(_candidateId < amountsPerCandidates.length);
+        require(_amount > 0);
+        require(balances[msg.sender] > _amount);
+        // Only those haven't voted before can participate
+        require(voterToTicketIdx[msg.sender] == 0);
+
+        amountsPerCandidates[_candidateId] += _amount;
+        tickets.push(Ticket(msg.sender, _candidateId, _amount));
+        voterToTicketIdx[msg.sender] = tickets.length;
+        balances[msg.sender] -= _amount;
+
+        VoteCallback(msg.sender, _amount, _candidateId);
     }
 
-    function evaluatePoll() public {
-        require(currentPoll._expiredTime < now);
+    function evaluatePoll() onlyOwner public returns (Ticket[]) {
+//        require(expiredTime < now);
         uint mostVotes = 0;
-        for (uint x = 0; x < currentPoll.amountsPerCandidates.length; x ++) {
-            if (currentPoll.amountsPerCandidates[x] > mostVotes) {
-                mostVotes = currentPoll.amountsPerCandidates[x];
+        for (uint x = 0; x < amountsPerCandidates.length; x ++) {
+            if (amountsPerCandidates[x] > mostVotes) {
+                mostVotes = amountsPerCandidates[x];
                 indexOfWinner = x;
             }
-        }        
+        }
+
+        for (uint tick = 0; tick < tickets.length; tick ++) {
+            Ticket storage t = tickets[tick];
+            if (t.candidateIds == indexOfWinner) {
+                balances[t.voter] += t.amount * 2;
+                CallbackEvent(msg.sender, t.amount, "");
+            }
+        }
+        return tickets;
+    }
+
+    function terminateContract() onlyOwner public {
+        // Transfer Ethe to owner and terminate the contract
+        selfdestruct(owner);
+    }
+
+    function voteStatus(uint _candidateId) external view returns (uint amount) {
+        // This function must not cost any gas
+        // Check on the vote of user
+        require(_candidateId < amountsPerCandidates.length);
+        return amountsPerCandidates[_candidateId];
+    }
+
+    function allVotesStatus() external view returns (uint[] amounts) {
+        return amountsPerCandidates;
+    }
+
+    function viewWinningCandidate() external view returns (uint candidateId) {
+        return indexOfWinner;
     }
 
     /* Event happens when new user registered */
@@ -53,9 +103,6 @@ contract CasinoToken is BasicToken, Ownable {
 
     /* Notify when a new transaction is made */
     event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /* Test event callback*/
-    event CallbackEvent(uint256 value, string s);
 
     /* Define our token constructor */
     function CasinoToken() public {
@@ -74,7 +121,7 @@ contract CasinoToken is BasicToken, Ownable {
         return true;
     }
 
-    function definePreSupply(uint _newValue) onlyOwner public {
+    function definePreSupply(uint _newValue) public onlyOwner {
         PRE_SUPPLY = _newValue;
     }
 
@@ -86,11 +133,10 @@ contract CasinoToken is BasicToken, Ownable {
     }
 
     function eventCallback() public {
-        CallbackEvent(PRE_SUPPLY, "456646846");
+        CallbackEvent(msg.sender, PRE_SUPPLY, "456646846");
     }
 
-    function getBalance() public returns (uint256 balance) {
-        UserAdded(msg.sender);
+    function getBalance() view public returns (uint256 balance) {
         return balanceOf(msg.sender);
     }
 

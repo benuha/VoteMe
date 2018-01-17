@@ -41,6 +41,14 @@ function initAcc() {
         $('#TTAccount').text(account);
         console.log(account);
 
+        web3.eth.getBalance(account, function(err, result){
+            if (!err) {
+                $('#TTEthe').text(web3.fromWei(result.toNumber(), "ether"));
+            } else {
+                alert(err);
+            }
+        });
+
         getCasinoToken(function (casinoTokenArtifact){
             console.log(casinoTokenArtifact);
             truffleContract = TruffleContract(casinoTokenArtifact);
@@ -73,6 +81,8 @@ function getBalance() {
         return meta.getBalance.call({from: account});
     }).then(function (balance) {
         $('#TTBalance').text(balance.toNumber());
+
+        checkCandidatesAmounts();
     }).catch(function(err) {
         console.log(err);
     });
@@ -84,15 +94,56 @@ function registerUser () {
         alert("You don't have any account specified!");
         return;
     }
-    console.log("Register User: " + account);
+    setStatus("Register User: " + account);
 
     truffleContract.deployed().then(function (meta) {
         return meta.registerUser(account, {from: account, gas: 423013});
     }).then(function () {
         setStatus("Registered!");
+        console.log("Registered");
         getBalance();
     });
 }
+
+
+function createPoll() {
+    console.log("Create a poll");
+    setStatus("Create a poll");
+    
+    truffleContract.deployed().then(function (instance) {
+        return instance.createPoll(3, 200, {from: account, gas: 223456});
+    });
+}
+
+function vote(candidate_id, ca$h) {
+    console.log("Vote on candidate: " + candidate_id + " amount: " + ca$h);
+    setStatus("Vote on candidate: " + candidate_id + " amount: " + ca$h);
+
+    truffleContract.deployed().then(function (instance) {
+        return instance.voteOnCandidate(candidate_id, ca$h, {from: account, gas: 423456});
+    });
+}
+
+function checkCandidatesAmounts() {
+    truffleContract.deployed().then(function (instance) {
+        return instance.allVotesStatus();
+    }).then(function (amounts) {
+        console.log(amounts);
+        for (var t = 0; t < amounts.length; t ++){
+            console.log(amounts[t].c[0]);
+            $("#candidate_" + (t + 1) + "_amount").text(amounts[t].c[0] + " Ca$h");
+        }
+    });
+}
+
+function evalPoll() {
+    truffleContract.deployed().then(function (instance) {
+        return instance.evaluatePoll({from: account, gas: 645235});
+    }).then(function (tickets) {
+        console.log(tickets);
+    });
+}
+
 
 $(document).ready(function() {
     // Init Web3
