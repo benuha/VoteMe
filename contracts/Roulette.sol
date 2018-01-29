@@ -25,7 +25,7 @@ contract Roulette {
         return casino.balance;
     }
 
-    function casinoDeposit() public {
+    function casinoDeposit() public payable {
         if (msg.sender == casino.addr)
             casino.balance += msg.value;
         else 
@@ -40,7 +40,7 @@ contract Roulette {
     }
 
     // Bet on Number
-    function betOnNumber(uint number) public returns (string) {
+    function betOnNumber(uint number) public payable returns (string) {
         // Input Handling
         address addr = msg.sender;
         uint betSize = msg.value;
